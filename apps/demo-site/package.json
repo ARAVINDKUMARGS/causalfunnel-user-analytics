@@ -1,0 +1,16 @@
+{
+  "name": "@causalfunnel/demo-site",
+  "version": "1.0.0",
+  "description": "Instrumented demo ecommerce website for CausalFunnel analytics",
+  "scripts": {
+    "start": "node serve.js",
+    "dev": "node serve.js"
+  },
+  "keywords": [
+    "demo",
+    "ecommerce",
+    "tracking"
+  ],
+  "author": "CausalFunnel Intern Candidate",
+  "license": "ISC"
+}

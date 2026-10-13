@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products Catalog — Aura Gadgets Demo Store</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Tracker Status Banner -->
+  <div class="demo-banner">
+    <div class="banner-left">
+      <span class="pulse-dot"></span>
+      <span><strong>Analytics Tracker Active:</strong> Website ID <code>demo-store</code> | Streaming Page Views & Clicks</span>
+    </div>
+    <a href="http://localhost:5173" target="_blank" class="banner-link" id="link-open-dashboard">
+      Launch Analytics Dashboard &rarr;
+    </a>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="/" class="brand-logo" id="nav-brand">
+      <span>⚡</span> Aura Gadgets
+    </a>
+    <ul class="nav-links">
+      <li><a href="/" class="nav-link" id="nav-home">Home</a></li>
+      <li><a href="/products.html" class="nav-link active" id="nav-products">Products</a></li>
+      <li>
+        <a href="/cart.html" class="nav-link cart-badge-wrap" id="nav-cart">
+          Cart 🛒 <span class="cart-count" id="cart-badge">0</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">Product Catalog</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Filter by category or discover our newest tech innovations.</p>
+      </div>
+      <div>
+        <!-- Sensitive search input verification: tracker should NOT collect text values -->
+        <input type="text" placeholder="Search gadgets..." style="background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: #fff; padding: 8px 14px; border-radius: var(--radius-sm);" id="input-search">
+      </div>
+    </div>
+
+    <!-- Filter Chips -->
+    <div class="filter-bar">
+      <button class="filter-chip active" id="chip-all">All Products (6)</button>
+      <button class="filter-chip" id="chip-audio">Audio & Sound</button>
+      <button class="filter-chip" id="chip-wearables">Wearables</button>
+      <button class="filter-chip" id="chip-accessories">Accessories</button>
+    </div>
+
+    <div class="grid-3">
+      <!-- Product 1 -->
+      <article class="card" id="card-aurora-headphones">
+        <div class="card-img-placeholder">🎧</div>
+        <h3 class="card-title">Aurora Pro ANC Headphones</h3>
+        <p class="card-desc">Lossless Bluetooth 5.4, 48hr playback, dual beamforming microphones.</p>
+        <div class="card-footer">
+          <span class="price">$299</span>
+          <div style="display:flex; gap:8px;">
+            <a href="/product-detail.html?id=aurora-headphones" class="btn btn-sm btn-secondary" id="btn-prod-1">Inspect</a>
+            <button class="btn btn-sm btn-accent" id="btn-cart-1" onclick="addToCart('Aurora Pro ANC Headphones')">Add to Cart</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Product 2 -->
+      <article class="card" id="card-zenith-smartwatch">
+        <div class="card-img-placeholder">⌚</div>
+        <h3 class="card-title">Zenith Bio Watch Ultra</h3>
+        <p class="card-desc">Grade 5 titanium casing, 100m dive proof, continuous heart rate and SpO2 tracking.</p>
+        <div class="card-footer">
+          <span class="price">$399</span>
+          <div style="display:flex; gap:8px;">
+            <a href="/product-detail.html?id=zenith-smartwatch" class="btn btn-sm btn-secondary" id="btn-prod-2">Inspect</a>
+            <button class="btn btn-sm btn-accent" id="btn-cart-2" onclick="addToCart('Zenith Bio Watch Ultra')">Add to Cart</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Product 3 -->
+      <article class="card" id="card-nebula-earbuds">
+        <div class="card-img-placeholder">🎶</div>
+        <h3 class="card-title">Nebula True Wireless Earbuds</h3>
+        <p class="card-desc">Active dynamic noise isolation, ultra-light ergonomic fit, seamless multi-device pairing.</p>
+        <div class="card-footer">
+          <span class="price">$149</span>
+          <div style="display:flex; gap:8px;">
+            <a href="/product-detail.html?id=nebula-earbuds" class="btn btn-sm btn-secondary" id="btn-prod-3">Inspect</a>
+            <button class="btn btn-sm btn-accent" id="btn-cart-3" onclick="addToCart('Nebula True Wireless Earbuds')">Add to Cart</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Product 4 -->
+      <article class="card" id="card-pulse-speaker">
+        <div class="card-img-placeholder">🔊</div>
+        <h3 class="card-title">Pulse Dynamic 360 Speaker</h3>
+        <p class="card-desc">Waterproof IP67 portable outdoor speaker with deep dual bass radiators and party sync.</p>
+        <div class="card-footer">
+          <span class="price">$179</span>
+          <div style="display:flex; gap:8px;">
+            <a href="/product-detail.html?id=pulse-speaker" class="btn btn-sm btn-secondary" id="btn-prod-4">Inspect</a>
+            <button class="btn btn-sm btn-accent" id="btn-cart-4" onclick="addToCart('Pulse Dynamic 360 Speaker')">Add to Cart</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Product 5 -->
+      <article class="card" id="card-hyper-dock">
+        <div class="card-img-placeholder">⚡</div>
+        <h3 class="card-title">HyperCharge 140W GaN Station</h3>
+        <p class="card-desc">Multi-port intelligent fast charging station with smart LED power distribution readout.</p>
+        <div class="card-footer">
+          <span class="price">$89</span>
+          <div style="display:flex; gap:8px;">
+            <a href="/product-detail.html?id=hyper-dock" class="btn btn-sm btn-secondary" id="btn-prod-5">Inspect</a>
+            <button class="btn btn-sm btn-accent" id="btn-cart-5" onclick="addToCart('HyperCharge 140W GaN Station')">Add to Cart</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Product 6 -->
+      <article class="card" id="card-lumina-light">
+        <div class="card-img-placeholder">💡</div>
+        <h3 class="card-title">Lumina Smart Desk Ambient Light</h3>
+        <p class="card-desc">Circadian rhythm adaptive backlighting, wireless controller, and touch dimming.</p>
+        <div class="card-footer">
+          <span class="price">$119</span>
+          <div style="display:flex; gap:8px;">
+            <a href="/product-detail.html?id=lumina-light" class="btn btn-sm btn-secondary" id="btn-prod-6">Inspect</a>
+            <button class="btn btn-sm btn-accent" id="btn-cart-6" onclick="addToCart('Lumina Smart Desk Ambient Light')">Add to Cart</button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 Aura Gadgets Demo Store — Powered by CausalFunnel Analytics SDK.</p>
+  </footer>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="/app.js"></script>
+  <!-- Standalone Browser Tracking SDK -->
+  <script src="http://localhost:5000/tracker.js"></script>
+  <script>
+    if (window.AnalyticsTracker) {
+      AnalyticsTracker.init({
+        apiUrl: "http://localhost:5000",
+        websiteId: "demo-store",
+        debug: true
+      });
+    }
+  </script>
+</body>
+</html>

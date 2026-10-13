@@ -1,0 +1,23 @@
+{
+  "name": "@causalfunnel/tracker",
+  "version": "1.0.0",
+  "description": "Lightweight, privacy-conscious vanilla JavaScript browser tracking SDK",
+  "main": "dist/tracker.js",
+  "module": "src/tracker.js",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "node build.js",
+    "test": "node --test tests/tracker.test.js"
+  },
+  "keywords": [
+    "analytics",
+    "tracker",
+    "sdk",
+    "heatmap"
+  ],
+  "author": "CausalFunnel Intern Candidate",
+  "license": "ISC"
+}

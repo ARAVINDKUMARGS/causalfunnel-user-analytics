@@ -1,0 +1,33 @@
+{
+  "name": "causalfunnel-analytics-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CausalFunnel Simple User Analytics Application Monorepo",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces --if-present",
+    "dev:server": "npm run dev --workspace=apps/server",
+    "dev:dashboard": "npm run dev --workspace=apps/dashboard",
+    "dev:demo": "npm run dev --workspace=apps/demo-site",
+    "build": "npm run build --workspaces --if-present",
+    "build:tracker": "npm run build --workspace=packages/tracker",
+    "build:dashboard": "npm run build --workspace=apps/dashboard",
+    "test": "npm run test --workspaces --if-present",
+    "test:server": "npm run test --workspace=apps/server",
+    "test:tracker": "npm run test --workspace=packages/tracker",
+    "seed": "npm run seed --workspace=apps/server"
+  },
+  "keywords": [
+    "analytics",
+    "tracker-sdk",
+    "heatmap",
+    "dashboard",
+    "mongodb",
+    "express"
+  ],
+  "author": "CausalFunnel Intern Candidate",
+  "license": "ISC"
+}

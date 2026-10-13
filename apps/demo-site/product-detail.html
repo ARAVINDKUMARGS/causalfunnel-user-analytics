@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details — Aura Gadgets Demo Store</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Tracker Status Banner -->
+  <div class="demo-banner">
+    <div class="banner-left">
+      <span class="pulse-dot"></span>
+      <span><strong>Analytics Tracker Active:</strong> Website ID <code>demo-store</code> | Streaming Page Views & Clicks</span>
+    </div>
+    <a href="http://localhost:5173" target="_blank" class="banner-link" id="link-open-dashboard">
+      Launch Analytics Dashboard &rarr;
+    </a>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="/" class="brand-logo" id="nav-brand">
+      <span>⚡</span> Aura Gadgets
+    </a>
+    <ul class="nav-links">
+      <li><a href="/" class="nav-link" id="nav-home">Home</a></li>
+      <li><a href="/products.html" class="nav-link" id="nav-products">Products</a></li>
+      <li>
+        <a href="/cart.html" class="nav-link cart-badge-wrap" id="nav-cart">
+          Cart 🛒 <span class="cart-count" id="cart-badge">0</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Container -->
+  <main class="container">
+    <div style="margin-bottom: 20px;">
+      <a href="/products.html" class="banner-link" id="link-back-catalog">&larr; Back to Products</a>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start;">
+      <!-- Product Gallery Mockup -->
+      <div class="card" style="padding: 32px; text-align: center;">
+        <div style="font-size: 6rem; padding: 48px 0;" id="product-icon">🎧</div>
+        <div style="display: flex; gap: 12px; justify-content: center;">
+          <button class="btn btn-sm btn-secondary active" id="btn-color-black">Matte Black</button>
+          <button class="btn btn-sm btn-secondary" id="btn-color-silver">Lunar Silver</button>
+          <button class="btn btn-sm btn-secondary" id="btn-color-navy">Deep Navy</button>
+        </div>
+      </div>
+
+      <!-- Product Details & Actions -->
+      <div>
+        <span class="hero-tag" id="tag-badge">Editor's Choice 2026</span>
+        <h1 class="hero-title" style="font-size: 2.2rem; margin-top: 8px;" id="product-title">Aurora Pro ANC Wireless Headphones</h1>
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+          <span class="price" style="font-size: 1.8rem;" id="product-price">$299.00</span>
+          <span style="color: #10b981; font-weight: 600; font-size: 0.9rem;">✓ In Stock &amp; Ready to Ship</span>
+        </div>
+
+        <p style="color: var(--text-muted); margin-bottom: 24px; font-size: 1rem;">
+          Engineered with custom 45mm neodymium acoustic drivers, custom neural noise suppression microprocessors, and carbon fiber acoustic chambers for unparalleled sound clarity.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div style="display: flex; gap: 16px; margin-bottom: 32px;">
+          <button class="btn btn-primary" id="btn-buy-now" onclick="addToCart('Aurora Pro ANC Headphones'); window.location.href='/cart.html';">
+            Buy Now ($299)
+          </button>
+          <button class="btn btn-accent" id="btn-add-detail-cart" onclick="addToCart('Aurora Pro ANC Headphones')">
+            Add to Cart 🛒
+          </button>
+        </div>
+
+        <!-- Detail Tabs -->
+        <div class="tabs">
+          <button class="tab-btn active" id="tab-specs" onclick="switchTab('specs')">Specifications</button>
+          <button class="tab-btn" id="tab-box" onclick="switchTab('box')">In the Box</button>
+          <button class="tab-btn" id="tab-reviews" onclick="switchTab('reviews')">Customer Reviews (128)</button>
+        </div>
+
+        <div id="tab-content" style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: var(--radius-md); font-size: 0.95rem;">
+          <ul style="padding-left: 20px; color: var(--text-muted); line-height: 1.8;">
+            <li>Transducer: 45mm Titanium-coated dynamic drivers</li>
+            <li>Frequency Response: 10 Hz – 45,000 Hz</li>
+            <li>Noise Cancellation: -42dB Active Hybrid Noise Cancellation</li>
+            <li>Battery Life: 48 Hours playback with ANC on (USB-C Fast Charging)</li>
+            <li>Weight: 260g with memory foam protein leather earcups</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 Aura Gadgets Demo Store — Powered by CausalFunnel Analytics SDK.</p>
+  </footer>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="/app.js"></script>
+  <script>
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById('tab-' + tab);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const content = document.getElementById('tab-content');
+      if (tab === 'specs') {
+        content.innerHTML = `
+          <ul style="padding-left: 20px; color: var(--text-muted); line-height: 1.8;">
+            <li>Transducer: 45mm Titanium-coated dynamic drivers</li>
+            <li>Frequency Response: 10 Hz – 45,000 Hz</li>
+            <li>Noise Cancellation: -42dB Active Hybrid Noise Cancellation</li>
+            <li>Battery Life: 48 Hours playback with ANC on (USB-C Fast Charging)</li>
+          </ul>
+        `;
+      } else if (tab === 'box') {
+        content.innerHTML = `
+          <ul style="padding-left: 20px; color: var(--text-muted); line-height: 1.8;">
+            <li>Aurora Pro Headphones</li>
+            <li>Hard-shell magnetic protective travel case</li>
+            <li>Braided USB-C to USB-C charging cable (1.5m)</li>
+            <li>3.5mm low-impedance audio cable</li>
+            <li>Airplane audio adapter</li>
+          </ul>
+        `;
+      } else {
+        content.innerHTML = `
+          <div style="color: var(--text-muted); line-height: 1.6;">
+            <p>⭐⭐⭐⭐⭐ <strong>"Soundstage is simply unbelievable."</strong> — Marcus T.</p>
+            <p style="margin-top: 10px;">⭐⭐⭐⭐⭐ <strong>"Battery lasts through my entire international flight and back."</strong> — Sophia K.</p>
+          </div>
+        `;
+      }
+    }
+  </script>
+
+  <!-- Standalone Browser Tracking SDK -->
+  <script src="http://localhost:5000/tracker.js"></script>
+  <script>
+    if (window.AnalyticsTracker) {
+      AnalyticsTracker.init({
+        apiUrl: "http://localhost:5000",
+        websiteId: "demo-store",
+        debug: true
+      });
+    }
+  </script>
+</body>
+</html>

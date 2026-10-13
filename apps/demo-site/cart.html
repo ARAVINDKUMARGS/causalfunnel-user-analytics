@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart & Checkout — Aura Gadgets Demo Store</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Tracker Status Banner -->
+  <div class="demo-banner">
+    <div class="banner-left">
+      <span class="pulse-dot"></span>
+      <span><strong>Analytics Tracker Active:</strong> Website ID <code>demo-store</code> | Streaming Page Views & Clicks</span>
+    </div>
+    <a href="http://localhost:5173" target="_blank" class="banner-link" id="link-open-dashboard">
+      Launch Analytics Dashboard &rarr;
+    </a>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="/" class="brand-logo" id="nav-brand">
+      <span>⚡</span> Aura Gadgets
+    </a>
+    <ul class="nav-links">
+      <li><a href="/" class="nav-link" id="nav-home">Home</a></li>
+      <li><a href="/products.html" class="nav-link" id="nav-products">Products</a></li>
+      <li>
+        <a href="/cart.html" class="nav-link active cart-badge-wrap" id="nav-cart">
+          Cart 🛒 <span class="cart-count" id="cart-badge">1</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Container -->
+  <main class="container">
+    <h1 class="section-title" style="margin-bottom: 24px;">Your Cart & Checkout</h1>
+
+    <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: start;">
+      <!-- Order Items List -->
+      <div class="card">
+        <h2 style="font-size: 1.25rem; margin-bottom: 16px;">Order Summary</h2>
+        <div style="display: flex; gap: 16px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border-color);">
+          <div style="font-size: 2.5rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: var(--radius-sm);">🎧</div>
+          <div style="flex: 1;">
+            <h3 style="font-size: 1.05rem;">Aurora Pro ANC Headphones</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem;">Color: Matte Black | Qty: 1</p>
+          </div>
+          <span class="price">$299.00</span>
+        </div>
+
+        <div style="padding-top: 16px; display: flex; justify-content: space-between; color: var(--text-muted);">
+          <span>Estimated Shipping:</span>
+          <span style="color: #10b981;">FREE Express</span>
+        </div>
+        <div style="padding-top: 8px; display: flex; justify-content: space-between; font-weight: 700; font-size: 1.2rem; color: #fff;">
+          <span>Total:</span>
+          <span>$299.00</span>
+        </div>
+      </div>
+
+      <!-- Checkout Form (Protected / Privacy Form) -->
+      <div class="card">
+        <h2 style="font-size: 1.25rem; margin-bottom: 8px;">Express Checkout</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px;">
+          🔒 Sensitive form data (passwords, cards, inputs) is excluded automatically by the CausalFunnel tracker.
+        </p>
+
+        <form id="checkout-form" data-cf-ignore="true" onsubmit="event.preventDefault(); showToast('✅ Order simulated successfully!');">
+          <div style="margin-bottom: 12px;">
+            <label style="display:block; font-size:0.85rem; margin-bottom:4px; color:var(--text-muted);">Full Name</label>
+            <input type="text" value="Alex Morgan" style="width:100%; padding:10px; background:rgba(255,255,255,0.05); border:1px solid var(--border-color); color:#fff; border-radius:var(--radius-sm);" id="input-name">
+          </div>
+
+          <div style="margin-bottom: 12px;">
+            <label style="display:block; font-size:0.85rem; margin-bottom:4px; color:var(--text-muted);">Account Password (Excluded by SDK)</label>
+            <input type="password" value="secretpassword123" style="width:100%; padding:10px; background:rgba(255,255,255,0.05); border:1px solid var(--border-color); color:#fff; border-radius:var(--radius-sm);" id="input-password">
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <label style="display:block; font-size:0.85rem; margin-bottom:4px; color:var(--text-muted);">Card Number (Excluded by SDK)</label>
+            <input type="text" data-cf-ignore="true" placeholder="•••• •••• •••• 4242" style="width:100%; padding:10px; background:rgba(255,255,255,0.05); border:1px solid var(--border-color); color:#fff; border-radius:var(--radius-sm);" id="input-card">
+          </div>
+
+          <button type="submit" class="btn btn-success btn-block" id="btn-submit-order">
+            Complete Order ($299.00) 💳
+          </button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 Aura Gadgets Demo Store — Powered by CausalFunnel Analytics SDK.</p>
+  </footer>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="/app.js"></script>
+  <!-- Standalone Browser Tracking SDK -->
+  <script src="http://localhost:5000/tracker.js"></script>
+  <script>
+    if (window.AnalyticsTracker) {
+      AnalyticsTracker.init({
+        apiUrl: "http://localhost:5000",
+        websiteId: "demo-store",
+        debug: true
+      });
+    }
+  </script>
+</body>
+</html>
