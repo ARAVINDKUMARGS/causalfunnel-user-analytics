@@ -2,7 +2,8 @@ const dotenv = require('dotenv');
 const path = require('path');
 
 // Load environment from root .env or apps/server/.env
-dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../../../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 dotenv.config();
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
