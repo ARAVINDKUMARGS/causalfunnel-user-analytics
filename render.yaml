@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: causalfunnel-analytics-api
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: apps/server
+    buildCommand: npm install
+    startCommand: node src/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false
+      - key: CORS_ORIGIN
+        value: "*"

@@ -23,14 +23,21 @@ app.use(express.json({ limit: '100kb' }));
 app.use(express.urlencoded({ extended: true, limit: '100kb' }));
 
 // Serve the compiled tracking SDK directly from the server for easy integration
-const trackerDistPath = path.resolve(__dirname, '../../../packages/tracker/dist');
-const trackerSrcPath = path.resolve(__dirname, '../../../packages/tracker/src');
+const localPublicTracker = path.resolve(__dirname, '../public/tracker.js');
+const trackerDistPath = path.resolve(__dirname, '../../../packages/tracker/dist/tracker.js');
+const trackerSrcPath = path.resolve(__dirname, '../../../packages/tracker/src/tracker.js');
 
 app.get('/tracker.js', (req, res) => {
-  res.sendFile(path.join(trackerDistPath, 'tracker.js'), (err) => {
+  // Check standalone public tracker first (for Render subfolder deployments)
+  res.sendFile(localPublicTracker, (err) => {
     if (err) {
-      // Fallback to src if dist is not yet built
-      res.sendFile(path.join(trackerSrcPath, 'tracker.js'));
+      // Fallback to monorepo dist
+      res.sendFile(trackerDistPath, (err2) => {
+        if (err2) {
+          // Fallback to src
+          res.sendFile(trackerSrcPath);
+        }
+      });
     }
   });
 });

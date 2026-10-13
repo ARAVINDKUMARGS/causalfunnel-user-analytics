@@ -152,14 +152,15 @@
 
   <div id="toast-container" class="toast-container"></div>
 
+  <script src="/config.js"></script>
   <script src="/app.js"></script>
   <!-- Standalone Browser Tracking SDK -->
-  <script src="http://localhost:5000/tracker.js"></script>
+  <script src="/tracker.js"></script>
   <script>
-    if (window.AnalyticsTracker) {
+    if (window.AnalyticsTracker && window.CF_CONFIG) {
       AnalyticsTracker.init({
-        apiUrl: "http://localhost:5000",
-        websiteId: "demo-store",
+        apiUrl: window.CF_CONFIG.apiUrl,
+        websiteId: window.CF_CONFIG.websiteId,
         debug: true
       });
     }

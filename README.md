@@ -1,107 +1,95 @@
-# CausalFunnel Simple User Analytics Application
+# CausalFunnel Simple User Analytics Platform
 
-A high-performance, full-stack web analytics platform featuring a **privacy-conscious vanilla JavaScript tracking SDK**, an **Express.js & MongoDB aggregation backend**, a **modern React + Vite analytics SaaS dashboard**, and an **instrumented ecommerce demo store**.
+[![CI/Tests](https://img.shields.io/badge/tests-20%2F20%20passing-brightgreen)](https://github.com/ARAVINDKUMARGS/causalfunnel-user-analytics)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+[![Node.js](https://img.shields.io/badge/Node.js-v18%2B%20%7C%20v24-green)](https://nodejs.org/)
+[![Database](https://img.shields.io/badge/Database-MongoDB%20Atlas-forestgreen)](https://cloud.mongodb.com/)
+[![Frontend](https://img.shields.io/badge/Frontend-React%2018%20%2B%20Vite-cyan)](https://vitejs.dev/)
+[![Hosting: Render](https://img.shields.io/badge/Deploy-Render%20(API)-46e3b7)](https://render.com/)
+[![Hosting: Vercel](https://img.shields.io/badge/Deploy-Vercel%20(Dashboard)-black)](https://vercel.com/)
+
+A production-grade, full-stack web analytics platform featuring a **privacy-conscious vanilla JavaScript tracking SDK**, a **high-throughput Express.js & MongoDB aggregation backend**, a **modern React + Vite analytics SaaS dashboard**, and an **instrumented ecommerce demo store**.
 
 Built for the **CausalFunnel Full Stack Engineer Intern Technical Assignment**.
 
 ---
 
-## 🌟 Key Features
-
-1. **Lightweight Standalone Browser Tracking SDK (`@causalfunnel/tracker`)**:
-   - Zero external runtime dependencies; drops into any HTML page or SPA.
-   - Automatically tracks `page_view` events on load and on SPA route changes.
-   - Automatically captures `click` interactions with full coordinate metadata (`clientX/Y`, `pageX/Y`, scroll offsets, viewport & document dimensions).
-   - Generates persistent, cryptographically secure anonymous session IDs (`crypto.randomUUID` with RFC4122 v4 fallback) stored in `localStorage` with memory fallback.
-   - Privacy-by-design: automatically ignores password fields, email/phone/text inputs, textareas, and elements with `data-cf-ignore` or `data-analytics-ignore`.
-   - Network resilience: non-blocking `fetch(keepalive)` with an in-memory retry queue that automatically drains upon reconnection.
-   - User consent management: supports opt-in/opt-out methods (`setConsent()`, `optOut()`).
-
-2. **Scalable Express REST API & MongoDB Engine (`apps/server`)**:
-   - Clean modular architecture: controllers, services, models, middleware, and config.
-   - **High-performance MongoDB aggregation pipelines** for real-time session summaries, metrics, and timeseries—never loading unindexed raw datasets into Node.js memory.
-   - Compound indexes tailored for high write and aggregation throughput:
-     - `{ website_id: 1, session_id: 1, timestamp: -1 }`
-     - `{ website_id: 1, page_url: 1, event_type: 1, timestamp: -1 }`
-     - `{ website_id: 1, timestamp: -1 }`
-   - Strict input validation, URL normalization, rate limiting (`express-rate-limit`), Helmet security headers, and configurable CORS.
-   - Safe `/api/health` monitoring API uptime and database connectivity without leaking credentials.
-
-3. **Polished SaaS Analytics Dashboard (`apps/dashboard`)**:
-   - Modern React 18 + Vite with custom Vanilla CSS glassmorphism aesthetic and Inter typography.
-   - **Overview**: 4 KPI cards (Sessions, Events, Page Views, Clicks), Recharts activity time-series (hourly/daily), and Most Engaged Pages ranking.
-   - **User Sessions**: Paginated session explorer with sorting, view/click ratios, duration, and direct jump to journeys.
-   - **Session Journey**: Chronological event timeline displaying step-by-step visitor journeys with exact click coordinates and viewport metrics.
-   - **Click Heatmap Visualizer**: Normalized coordinate canvas visualization that scales clicks across diverse viewport dimensions and scroll offsets, with radius/opacity sliders and viewport vs. document toggles.
-
-4. **Aura Gadgets Demo Ecommerce Store (`apps/demo-site`)**:
-   - Realistic multi-page store (Home, Catalog, Product Detail, Cart/Checkout).
-   - Pre-instrumented with the SDK to stream live page views and clicks directly to the local backend.
-   - Demonstrates sensitive form exclusion (password inputs, payment forms).
+## 📑 Table of Contents
+1. [Architecture & Monorepo Structure](#-architecture--monorepo-structure)
+2. [Tech Stack](#-tech-stack)
+3. [Local Development Quickstart](#-local-development-quickstart)
+4. [MongoDB Atlas Configuration & Password Rotation](#-mongodb-atlas-configuration--password-rotation)
+5. [Production Deployment Guide](#-production-deployment-guide)
+   - [Deploying Backend API to Render](#1-backend-api-deployment-render)
+   - [Deploying Analytics Dashboard to Vercel](#2-frontend-dashboard-deployment-vercel)
+   - [Deploying Demo Ecommerce Store to Vercel](#3-demo-store-deployment-vercel)
+6. [Tracker SDK Integration Guide](#-tracker-sdk-integration-guide)
+7. [REST API Reference](#-rest-api-reference)
+8. [Database Schema & Compound Index Design](#-database-schema--compound-index-design)
+9. [Automated Testing & Verified Results](#-automated-testing--verified-results)
+10. [Troubleshooting & DevOps FAQ](#-troubleshooting--devops-faq)
 
 ---
 
-## 🏗️ Architecture & Repository Structure
+## 🏗️ Architecture & Monorepo Structure
 
 ```
 CausalFunnel/
-├── .env.example                 # Environment configuration template
-├── .gitignore                   # Excludes node_modules, dist, secrets, and local logs
-├── package.json                 # Monorepo workspaces and orchestration scripts
-├── README.md                    # Project documentation
+├── render.yaml                  # Root Render Blueprint specification (One-Click Deploy)
+├── .env.example                 # Production environment variable templates
+├── .gitignore                   # Ignores .env, node_modules, build artifacts, diagnostic logs
+├── package.json                 # Monorepo workspaces & orchestration scripts
+├── README.md                    # Exhaustive architecture, deployment & API guide
 │
 ├── packages/
 │   └── tracker/                 # Standalone Browser Tracking SDK
-│       ├── src/
-│       │   └── tracker.js       # Core vanilla tracking SDK
-│       ├── dist/
-│       │   └── tracker.js       # Minified / distributable bundle
-│       ├── tests/
-│       │   └── tracker.test.js  # Node.js test runner unit tests
-│       ├── build.js             # Bundle generator
+│       ├── src/tracker.js       # Core vanilla tracking SDK (zero dependencies)
+│       ├── dist/tracker.js      # Production distribution bundle
+│       ├── tests/tracker.test.js# Node test runner unit tests (5/5 passing)
+│       ├── build.js             # Builds & syncs bundle across packages
 │       └── package.json
 │
 ├── apps/
-│   ├── server/                  # Express REST API & MongoDB Database
+│   ├── server/                  # Express REST API & MongoDB Atlas Engine
 │   │   ├── src/
-│   │   │   ├── config/          # db.js, env.js (Graceful shutdown, validation)
-│   │   │   ├── controllers/     # Route handlers
+│   │   │   ├── config/          # db.js (Mongoose lifecycle), env.js (Env validation)
+│   │   │   ├── controllers/     # eventController, sessionController, heatmapController, etc.
 │   │   │   ├── middleware/      # validation.js, rateLimiter.js, corsConfig.js, errorHandler.js
-│   │   │   ├── models/          # Event.js (Mongoose schema & compound indexes)
+│   │   │   ├── models/          # Event.js (Mongoose schema with compound indexes)
 │   │   │   ├── routes/          # events.js, sessions.js, heatmap.js, analytics.js, health.js
-│   │   │   ├── services/        # eventService, sessionService, heatmapService, analyticsService
+│   │   │   ├── services/        # sessionService, heatmapService, analyticsService
 │   │   │   ├── utils/           # urlNormalizer.js, logger.js
-│   │   │   ├── app.js           # Express app instance
-│   │   │   └── server.js        # HTTP server listener with graceful shutdown
-│   │   ├── scripts/
-│   │   │   └── seed.js          # Synthetic demo data seeder
-│   │   ├── tests/
-│   │   │   └── api.test.js      # Supertest integration test suite
-│   │   ├── render.yaml          # Render deployment blueprint
+│   │   │   ├── app.js           # Express app definition & tracker endpoint
+│   │   │   └── server.js        # HTTP server with graceful shutdown (SIGINT/SIGTERM)
+│   │   ├── public/              # Standalone static assets (public/tracker.js)
+│   │   ├── scripts/seed.js      # Synthetic demo seeder (guarded against production)
+│   │   ├── tests/api.test.js    # Supertest integration test suite (15/15 passing)
+│   │   ├── render.yaml          # Render service definition
 │   │   └── package.json
 │   │
-│   ├── dashboard/               # React + Vite SaaS Analytics Dashboard
+│   ├── dashboard/               # React 18 + Vite SaaS Analytics Dashboard
 │   │   ├── src/
-│   │   │   ├── api/             # client.js (Centralized API client)
-│   │   │   ├── components/      # StatCard, FilterBar, HeatmapCanvas, Navbar, Sidebar, etc.
+│   │   │   ├── api/client.js    # Centralized API client reading VITE_API_URL
+│   │   │   ├── components/      # HeatmapCanvas, StatCard, FilterBar, Navbar, Sidebar, etc.
 │   │   │   ├── pages/           # OverviewPage, SessionsPage, SessionDetailPage, HeatmapPage
-│   │   │   ├── utils/           # formatters.js
-│   │   │   ├── App.jsx          # React Router layout
+│   │   │   ├── utils/           # formatters.js (Dates, Durations, Numbers)
+│   │   │   ├── App.jsx          # React Router setup
 │   │   │   ├── main.jsx         # Vite entry
 │   │   │   └── index.css        # Premium dark glassmorphism design system
-│   │   ├── index.html
-│   │   ├── vite.config.js
-│   │   ├── vercel.json          # Vercel SPA rewrite configuration
+│   │   ├── vercel.json          # Vercel SPA rewrites for client-side routing
+│   │   ├── vite.config.js       # Vite build configuration
 │   │   └── package.json
 │   │
 │   └── demo-site/               # Aura Gadgets Demo Ecommerce Store
-│       ├── index.html           # Home page
-│       ├── products.html        # Product catalog
-│       ├── product-detail.html  # Product details & specifications
-│       ├── cart.html            # Cart & sensitive checkout form
-│       ├── styles.css           # Modern ecommerce UI
-│       ├── app.js               # Client interactions & cart state
-│       ├── serve.js             # Lightweight static HTTP server (Port 3000)
+│       ├── index.html           # Store Home (Hero, Featured gadgets, CTA)
+│       ├── products.html        # Product catalog with category filter chips
+│       ├── product-detail.html  # Specifications tabs, customer reviews & Buy Now
+│       ├── cart.html            # Dynamic shopping cart & sensitive checkout form
+│       ├── config.js            # Production-aware dynamic endpoint resolver
+│       ├── app.js               # Dynamic cart persistence & toast notification engine
+│       ├── styles.css           # Modern dark ecommerce styling
+│       ├── serve.js             # Lightweight static HTTP server with clean URL routing
+│       ├── vercel.json          # Vercel clean URL configuration
 │       └── package.json
 ```
 
@@ -111,107 +99,200 @@ CausalFunnel/
 
 - **Frontend**: React 18, Vite, React Router v6, Recharts, Lucide React, Vanilla CSS.
 - **Backend**: Node.js (v18+ / v24 tested), Express.js 4, Mongoose 8.
-- **Database**: MongoDB (Local instance or MongoDB Atlas).
-- **Tracker**: Standalone Vanilla JavaScript SDK (IIFE / UMD).
+- **Database**: MongoDB Atlas (Cloud) / MongoDB Local.
+- **Tracking SDK**: Standalone Vanilla JavaScript SDK (IIFE / UMD compatible).
 - **Testing**: Node.js Test Runner (`node:test`, `node:assert/strict`) + Supertest.
-- **Security**: Helmet, CORS, Express-Rate-Limit, Strict NoSQL query sanitization.
+- **DevOps & Security**: Helmet, CORS with wildcard subdomains, Express-Rate-Limit, Vercel SPA rewrites, Render Blueprints.
 
 ---
 
-## 🚀 Getting Started
+## 🏃 Local Development Quickstart
 
 ### 1. Prerequisites
 - **Node.js**: v18.0.0 or later (v24.13.0 verified).
-- **npm**: v9.0.0 or later (v11.7.0 verified).
-- **MongoDB**: A running local MongoDB service on `mongodb://127.0.0.1:27017` or a MongoDB Atlas connection string.
+- **npm**: v9.0.0 or later.
+- A running MongoDB instance (Local or Atlas).
 
 ### 2. Installation
-Clone the repository and install all workspace dependencies from the root:
 ```bash
 git clone https://github.com/ARAVINDKUMARGS/causalfunnel-user-analytics.git
 cd causalfunnel-user-analytics
 npm install
 ```
 
-### 3. Environment Configuration
-Create a `.env` file in the project root based on `.env.example`:
+### 3. Environment Setup
+Copy the template to `.env`:
 ```bash
 cp .env.example .env
 ```
-Default configuration values:
+Default local values:
 ```env
 PORT=5000
 NODE_ENV=development
 MONGODB_URI=mongodb://127.0.0.1:27017/causalfunnel_analytics
-CORS_ORIGIN=http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:3000
+CORS_ORIGIN=*
 VITE_API_URL=http://localhost:5000
+VITE_DEMO_STORE_URL=http://localhost:3000
 ```
 
-### 4. Seed Synthetic Demo Data (Optional)
-Populate your database with realistic sessions, page views, and click coordinate heatmaps for testing:
+### 4. Run the Full Stack
 ```bash
-npm run seed
-```
-*(Safety Note: The seed script will refuse to execute in production).*
-
----
-
-## 🏃 Running the Application
-
-### Option A: Run All Services Concurrently
-From the project root:
-```bash
-# Terminal 1: Backend Server (Port 5000)
+# Terminal 1: Express REST API & Database (Port 5000)
 npm run dev:server
 
-# Terminal 2: React Dashboard (Port 5173)
+# Terminal 2: React Analytics Dashboard (Port 5173)
 npm run dev:dashboard
 
-# Terminal 3: Demo Store (Port 3000)
+# Terminal 3: Demo Ecommerce Store (Port 3000)
 npm run dev:demo
 ```
 
-### Service Access URLs:
+### Access URLs:
 - **Analytics Dashboard**: [http://localhost:5173](http://localhost:5173)
-- **Demo Ecommerce Store**: [http://localhost:3000](http://localhost:3000)
+- **Demo Store**: [http://localhost:3000](http://localhost:3000)
 - **API Health Check**: [http://localhost:5000/api/health](http://localhost:5000/api/health)
 - **Live Tracker Script**: [http://localhost:5000/tracker.js](http://localhost:5000/tracker.js)
 
 ---
 
+## 🔒 MongoDB Atlas Configuration & Password Rotation
+
+> [!WARNING]
+> If database credentials were shared in chat or committed to an insecure location, rotate the password immediately in the MongoDB Atlas console before deploying to production.
+
+### Step-by-Step Atlas Password Rotation & Network Whitelisting:
+1. Log in to [cloud.mongodb.com](https://cloud.mongodb.com).
+2. **Rotate Password**:
+   - In the left sidebar, click **Database Access** under Security.
+   - Find your database user (e.g. `kumargsaravind6_db_user`) and click **Edit**.
+   - Click **Edit Password**, select **Autogenerate Secure Password**, and copy the new password.
+   - Click **Update User**.
+3. **Whitelist Render Cloud IPs**:
+   - In the left sidebar, click **Network Access**.
+   - Click **Add IP Address**.
+   - Select **Allow Access from Anywhere** (`0.0.0.0/0`) with a note `Render Production API`.
+   - Click **Confirm**. (Render dynamic containers do not have static egress IPs on free plans).
+4. **Construct Your Production URI**:
+   ```
+   mongodb+srv://<USER>:<NEW_PASSWORD>@cluster0.jk6ibno.mongodb.net/causalfunnel_analytics?retryWrites=true&w=majority&appName=Cluster0
+   ```
+5. **Set in Hosting Environment**: Add this URI **only** in your Render dashboard environment variables. Never commit it to Git.
+
+---
+
+## 🚀 Production Deployment Guide
+
+### 1. Backend API Deployment (Render)
+
+You can deploy via the Render Web Console or via the provided [`render.yaml`](render.yaml) Blueprint.
+
+#### Manual Dashboard Setup Steps:
+1. Log in to [dashboard.render.com](https://dashboard.render.com) and click **New +** > **Web Service**.
+2. Connect your repository: `https://github.com/ARAVINDKUMARGS/causalfunnel-user-analytics`.
+3. Configure the service settings:
+   - **Name**: `causalfunnel-analytics-api`
+   - **Region**: Oregon (or your preferred region)
+   - **Branch**: `main`
+   - **Root Directory**: `apps/server`
+   - **Runtime**: `Node`
+   - **Build Command**: `npm install`
+   - **Start Command**: `node src/server.js`
+   - **Instance Type**: `Free`
+4. Add **Environment Variables** under the Environment tab:
+   | Key | Value | Description |
+   | :--- | :--- | :--- |
+   | `NODE_ENV` | `production` | Enables production optimizations & hides stack traces |
+   | `PORT` | `10000` | Port listened to by Render container |
+   | `MONGODB_URI` | `mongodb+srv://<USER>:<PASS>@.../causalfunnel_analytics?retryWrites=true&w=majority` | Your Atlas connection string |
+   | `CORS_ORIGIN` | `https://*.vercel.app,https://your-dashboard.vercel.app` | Allowed origins (supports comma-separated list or `*`) |
+5. Click **Create Web Service**.
+6. When deployment finishes, copy your live service URL (e.g., `https://causalfunnel-analytics-api.onrender.com`).
+7. Test the live health endpoint:
+   ```bash
+   curl -i https://causalfunnel-analytics-api.onrender.com/api/health
+   # Expected: HTTP 200 { "status": "healthy", "database": { "status": "connected" } }
+   ```
+
+---
+
+### 2. Frontend Dashboard Deployment (Vercel)
+
+The React dashboard is optimized for Vercel with automated client-side SPA routing via [`apps/dashboard/vercel.json`](apps/dashboard/vercel.json).
+
+#### Manual Dashboard Setup Steps:
+1. Log in to [vercel.com](https://vercel.com) and click **Add New...** > **Project**.
+2. Import `https://github.com/ARAVINDKUMARGS/causalfunnel-user-analytics`.
+3. Configure Project Settings:
+   - **Framework Preset**: `Vite`
+   - **Root Directory**: Click **Edit** and choose `apps/dashboard`.
+   - **Build Command**: `npm run build` (or Vite default)
+   - **Output Directory**: `dist`
+   - **Install Command**: `npm install`
+4. Expand **Environment Variables** and add:
+   | Key | Value | Example |
+   | :--- | :--- | :--- |
+   | `VITE_API_URL` | Your live Render backend URL | `https://causalfunnel-analytics-api.onrender.com` |
+   | `VITE_DEMO_STORE_URL` | Your live Demo Store URL | `https://causalfunnel-demo.vercel.app` |
+5. Click **Deploy**.
+6. Vercel will output your public dashboard URL (e.g., `https://causalfunnel-user-analytics.vercel.app`).
+7. Verify that opening `/sessions` and `/heatmap` directly in the browser does not result in 404 errors (handled by [`vercel.json`](apps/dashboard/vercel.json)).
+
+---
+
+### 3. Demo Store Deployment (Vercel)
+
+The demo ecommerce website can be deployed as an independent static site on Vercel:
+
+1. In Vercel, click **Add New...** > **Project** and select the same repository.
+2. Configure Project Settings:
+   - **Project Name**: `causalfunnel-demo-store`
+   - **Framework Preset**: `Other`
+   - **Root Directory**: Click **Edit** and choose `apps/demo-site`.
+   - **Output Directory**: Leave empty (`.`)
+   - **Build Command**: Leave empty
+3. Click **Deploy**.
+4. The demo store includes [`apps/demo-site/config.js`](apps/demo-site/config.js), which dynamically communicates with your production Render API:
+   - It defaults to your configured backend or accepts runtime overrides via query parameters:
+     ```
+     https://your-demo-store.vercel.app/?api=https://causalfunnel-analytics-api.onrender.com&dashboard=https://causalfunnel-user-analytics.vercel.app
+     ```
+5. Add your live demo URL to `CORS_ORIGIN` in Render to ensure seamless cross-origin telemetry.
+
+---
+
 ## 📦 Tracker SDK Integration Guide
 
-To track any website, add the compiled tracking script and initialize it:
+To track interactions on any third-party website, add the tracking SDK script:
 
 ```html
-<!-- Include tracker from your analytics backend -->
-<script src="http://localhost:5000/tracker.js"></script>
+<!-- Load the SDK from your production API or CDN -->
+<script src="https://causalfunnel-analytics-api.onrender.com/tracker.js"></script>
 
 <script>
-  // Initialize tracker
+  // Initialize the tracker
   AnalyticsTracker.init({
-    apiUrl: "http://localhost:5000",
-    websiteId: "demo-store",
-    debug: true,         // Enables console logs in development
-    consent: true,       // Default true; respects opt-outs
-    spaTracking: true    // Tracks pushState & popstate navigation
+    apiUrl: "https://causalfunnel-analytics-api.onrender.com",
+    websiteId: "production-store",
+    debug: false,         // Set true in dev for console logging
+    consent: true,        // Respects GDPR / user opt-out
+    spaTracking: true     // Automatically captures pushState & popstate
   });
 </script>
 ```
 
-### Programmatic SDK Methods
-- `AnalyticsTracker.trackPageView(customUrl, metadata)`: Manually trigger a page view.
+### SDK Programmatic Methods
+- `AnalyticsTracker.trackPageView(customUrl, metadata)`: Trigger an explicit page view event.
 - `AnalyticsTracker.track(eventType, data)`: Ingest a custom event.
-- `AnalyticsTracker.getSessionId()`: Retrieve the active anonymous session ID.
-- `AnalyticsTracker.setConsent(false)` / `AnalyticsTracker.optOut()`: Opt out user from tracking.
-- `AnalyticsTracker.destroy()`: Safely remove event listeners and clean up memory.
+- `AnalyticsTracker.getSessionId()`: Retrieve the current anonymous session UUID.
+- `AnalyticsTracker.setConsent(false)` / `AnalyticsTracker.optOut()`: Halt tracking for opt-out users.
+- `AnalyticsTracker.destroy()`: Remove window and document event listeners cleanly.
 
 ### Privacy Safeguards
-The SDK intentionally ignores and will **never collect**:
-- Passwords (`<input type="password">`)
-- Text inputs and textareas (`<input type="text">`, `<input type="email">`, `<textarea>`)
-- Elements decorated with `data-cf-ignore="true"` or `data-analytics-ignore="true"`
-- Keystrokes or form input contents
+The tracking SDK excludes and will **never collect**:
+- Password fields (`<input type="password">`)
+- Text inputs, emails, telephone numbers, and textareas (`<input type="text">`, `<textarea>`)
+- Form elements marked with `data-cf-ignore="true"` or `data-analytics-ignore="true"`
+- Keystrokes or sensitive input values
 
 ---
 
@@ -221,126 +302,99 @@ All responses return standard JSON with appropriate HTTP status codes (200, 201,
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `GET` | `/api/health` | Health check reporting API uptime and MongoDB status. |
+| `GET` | `/api/health` | Health check reporting API uptime and database connectivity. |
 | `POST` | `/api/events` | Ingest a single `page_view` or `click` event. |
 | `POST` | `/api/events/batch` | Batch ingest up to 50 events. |
-| `GET` | `/api/sessions` | Paginated sessions summary with total events, views, clicks, duration. |
+| `GET` | `/api/sessions` | Paginated session summaries with durations and event counts. |
 | `GET` | `/api/sessions/:sessionId/events` | Chronological event stream for a session. |
 | `GET` | `/api/heatmap/pages` | List distinct pages with recorded clicks. |
-| `GET` | `/api/heatmap?url=...&websiteId=...` | Coordinate points and dimension metadata for heatmap canvas. |
-| `GET` | `/api/analytics/summary` | Aggregated KPI summary (sessions, events, views, clicks, top pages). |
+| `GET` | `/api/heatmap?url=...&websiteId=...` | Coordinate points and viewport dimension metadata for heatmap canvas. |
+| `GET` | `/api/analytics/summary` | Aggregated KPI metrics (sessions, events, views, clicks, top pages). |
 | `GET` | `/api/analytics/timeseries` | Grouped event counts over hourly or daily intervals. |
-
-### Example Payload (`POST /api/events`):
-```json
-{
-  "session_id": "8d982534-9c40-4736-b10a-17c6cd80072c",
-  "website_id": "demo-store",
-  "event_type": "click",
-  "page_url": "http://localhost:3000/products.html",
-  "timestamp": "2026-10-13T14:10:00.000Z",
-  "click": {
-    "clientX": 420,
-    "clientY": 640,
-    "pageX": 420,
-    "pageY": 790,
-    "scrollX": 0,
-    "scrollY": 150,
-    "viewportWidth": 1440,
-    "viewportHeight": 900,
-    "pageWidth": 1440,
-    "pageHeight": 2400,
-    "targetTag": "button",
-    "targetId": "btn-add-1",
-    "targetClass": "btn btn-sm btn-accent",
-    "targetText": "Add to Cart"
-  }
-}
-```
 
 ---
 
-## 🧪 Testing & Verification
+## 🗄️ Database Schema & Compound Index Design
 
-Automated test suites cover the backend API, the tracking SDK, and end-to-end browser workflows:
+### Event Model Schema
+- `session_id`: String, required, indexed.
+- `website_id`: String, required, indexed.
+- `event_type`: Enum (`['page_view', 'click']`), required.
+- `page_url`: String, normalized URL, required.
+- `timestamp`: Date, stored in UTC, required.
+- `click`: Object (optional):
+  - `clientX`, `clientY`: Viewport-relative coordinates (Number).
+  - `pageX`, `pageY`: Document-relative coordinates including scroll offset (Number).
+  - `scrollX`, `scrollY`: Scroll positions (Number).
+  - `viewportWidth`, `viewportHeight`: Screen dimensions (Number).
+  - `pageWidth`, `pageHeight`: Full page dimensions (Number).
+  - `targetTag`, `targetId`, `targetClass`, `targetText`: Element descriptors (Sanitized strings).
+- `metadata`: Object, size-limited to 4KB (Sanitized against NoSQL operators).
+
+### Compound Index Rationale
+1. `{ website_id: 1, session_id: 1, timestamp: -1 }`: Optimizes chronological journey queries and session aggregation grouping.
+2. `{ website_id: 1, page_url: 1, event_type: 1, timestamp: -1 }`: Powers fast heatmap coordinate extraction and top page rankings.
+3. `{ website_id: 1, timestamp: -1 }`: Maximizes performance for time-series date-range filtering.
+
+---
+
+## 🧪 Automated Testing & Verified Results
+
+Automated test suites cover the tracker SDK, API validations, and MongoDB aggregations:
 
 ```bash
-# 1. Run Tracker SDK unit tests (Session IDs, opt-out, listeners, payload formats)
+# Run tracker unit tests
 npm run test:tracker
 
-# 2. Run REST API integration tests (Supertest + MongoDB aggregations + validations)
+# Run server API integration tests against MongoDB Atlas
 npm run test:server
 
-# 3. Verify Production Builds
+# Run production builds
 npm run build:tracker
 npm run build:dashboard
 ```
 
-### Verified Test Results:
+### Verified Test Suite Output (20/20 Passing):
 ```
-✔ Tracker initialization and session persistence (7.6ms)
-✔ Track page view sends valid payload (2.4ms)
-✔ Track click with coordinates and viewport dimensions (0.5ms)
-✔ Opt-out / consent blocks event tracking (0.8ms)
-✔ Repeated initialization safely resets and avoids duplicate state (0.5ms)
-✔ GET /api/health returns healthy status without credentials (57.7ms)
-✔ GET /tracker.js serves the JavaScript tracking SDK (18.4ms)
-✔ POST /api/events records a valid page_view event (57.9ms)
-✔ POST /api/events records a valid click event with coordinates (25.1ms)
-✔ POST /api/events rejects invalid payloads with 400 Bad Request (24.8ms)
-✔ POST /api/events/batch ingests multiple events (15.1ms)
-✔ POST /api/events/batch rejects empty array or non-array (11.7ms)
-✔ GET /api/sessions returns paginated session summaries (212.4ms)
-✔ GET /api/sessions/:sessionId/events returns chronological timeline (22.1ms)
-✔ GET /api/sessions/:sessionId/events returns 404 for unknown session (11.5ms)
-✔ GET /api/heatmap/pages returns distinct pages with clicks (20.1ms)
-✔ GET /api/heatmap returns click coordinates for page (18.3ms)
-✔ GET /api/heatmap rejects missing url parameter (5.4ms)
-✔ GET /api/analytics/summary returns KPI metrics and top pages (28.2ms)
-✔ GET /api/analytics/timeseries returns grouped intervals (24.9ms)
+✔ Tracker initialization and session persistence (4.7ms)
+✔ Track page view sends valid payload (1.3ms)
+✔ Track click with coordinates and viewport dimensions (0.3ms)
+✔ Opt-out / consent blocks event tracking (0.2ms)
+✔ Repeated initialization safely resets and avoids duplicate state (0.2ms)
+✔ GET /api/health returns healthy status without credentials (812.5ms)
+✔ GET /tracker.js serves the JavaScript tracking SDK (10.9ms)
+✔ POST /api/events records a valid page_view event (469.6ms)
+✔ POST /api/events records a valid click event with coordinates (65.9ms)
+✔ POST /api/events rejects invalid payloads with 400 Bad Request (25.4ms)
+✔ POST /api/events/batch ingests multiple events (69.2ms)
+✔ POST /api/events/batch rejects empty array or non-array (7.8ms)
+✔ GET /api/sessions returns paginated session summaries (69.5ms)
+✔ GET /api/sessions/:sessionId/events returns chronological timeline (127.8ms)
+✔ GET /api/sessions/:sessionId/events returns 404 for unknown session (124.7ms)
+✔ GET /api/heatmap/pages returns distinct pages with clicks (82.2ms)
+✔ GET /api/heatmap returns click coordinates for page (123.2ms)
+✔ GET /api/heatmap rejects missing url parameter (9.0ms)
+✔ GET /api/analytics/summary returns KPI metrics and top pages (144.4ms)
+✔ GET /api/analytics/timeseries returns grouped intervals (58.6ms)
 ```
-**Total: 20/20 Automated Tests Passed (100% Pass Rate).**
 
 ---
 
-## 🚢 Production Deployment
+## 🛠️ Troubleshooting & DevOps FAQ
 
-### 1. Frontend (Vercel)
-1. Link your GitHub repository in the Vercel dashboard.
-2. Set **Root Directory** to `apps/dashboard`.
-3. Set **Build Command** to `npm run build`.
-4. Set **Output Directory** to `dist`.
-5. Add Environment Variable:
-   - `VITE_API_URL`: `https://your-api-domain.onrender.com`
-6. `apps/dashboard/vercel.json` already contains SPA rewrites to support React Router.
+#### 1. Render Free Tier Spin-Down (Cold Starts)
+- **Symptom**: The first request to `/api/health` takes 30-50 seconds to respond.
+- **Cause**: Render free tier instances spin down after 15 minutes of inactivity.
+- **Solution**: The dashboard automatically retries and displays a friendly connecting badge until the server responds.
 
-### 2. Backend (Render / Node.js Host)
-1. Deploy via Render Blueprint using `apps/server/render.yaml` or create a new Web Service.
-2. Set **Root Directory** to `apps/server`.
-3. Set **Build Command** to `npm install`.
-4. Set **Start Command** to `node src/server.js`.
-5. Set Environment Variables:
-   - `NODE_ENV`: `production`
-   - `PORT`: `10000`
-   - `MONGODB_URI`: `mongodb+srv://<user>:<password>@cluster0.mongodb.net/causalfunnel_analytics`
-   - `CORS_ORIGIN`: `https://your-dashboard.vercel.app`
+#### 2. CORS Errors in Production
+- **Symptom**: `Access to fetch at 'https://...onrender.com' from origin 'https://...vercel.app' has been blocked by CORS policy`.
+- **Solution**: Set `CORS_ORIGIN=*` or specify your exact comma-separated Vercel domains (e.g. `https://your-dashboard.vercel.app,https://your-demo.vercel.app`) in the Render environment variables. The API automatically strips trailing slashes and supports `*.vercel.app` wildcards.
 
----
+#### 3. 404 on Direct Page Refresh in Vercel
+- **Symptom**: Refreshing `/sessions` or `/heatmap` shows a 404 error.
+- **Solution**: Ensure [`apps/dashboard/vercel.json`](apps/dashboard/vercel.json) contains the rewrite rule `{ "source": "/(.*)", "destination": "/index.html" }`.
 
-## ⚖️ Assumptions, Trade-offs & Known Limitations
-
-1. **Normalized Coordinate Heatmap**: 
-   - *Design Decision*: Without taking and storing full-page screenshots on the client, coordinates are mapped onto a standardized canvas scaled to recorded viewport dimensions. This preserves user privacy, saves client bandwidth, and scales across resolutions.
-2. **Session Persistence**:
-   - *Design Decision*: Session IDs are persisted in browser `localStorage` and memory. Third-party cookie deprecation does not affect tracking.
-3. **Aggregations vs. In-Memory**:
-   - *Design Decision*: All session grouping, durations, and counts use native MongoDB `$group` and `$facet` pipelines rather than loading event collections into Node.js application memory.
-
----
-
-## 🔒 Security & Privacy Statement
-
-- No passwords, input text, email addresses, or payment card numbers are collected by the tracker SDK.
-- Client inputs are strictly sanitized before database insertion to prevent NoSQL injection.
-- Production error handlers strip stack traces and internal server details.
-- Environment secrets are excluded from Git through `.gitignore`.
+#### 4. MongoDB Atlas Connection Timeout
+- **Symptom**: `MongooseServerSelectionError: Server selection timed out after 5000 ms`.
+- **Solution**: In Atlas, navigate to **Network Access** and verify `0.0.0.0/0` (Allow Access from Anywhere) is active. Render free containers do not have static IP addresses.

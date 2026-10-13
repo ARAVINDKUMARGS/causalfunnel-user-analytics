@@ -175,7 +175,7 @@ export default function HeatmapPage() {
           title="No Click Heatmaps Available"
           description="We haven't recorded any clicks for this website yet. Click elements on the demo store to populate the heatmap."
           actionText="Visit Demo Store"
-          onAction={() => window.open('http://localhost:3000', '_blank')}
+          onAction={() => window.open(import.meta.env.VITE_DEMO_STORE_URL || 'http://localhost:3000', '_blank')}
         />
       )}
 

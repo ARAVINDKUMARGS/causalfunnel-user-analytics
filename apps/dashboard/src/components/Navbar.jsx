@@ -52,7 +52,7 @@ export default function Navbar() {
 
         {/* Link to demo store */}
         <a
-          href="http://localhost:3000"
+          href={import.meta.env.VITE_DEMO_STORE_URL || 'http://localhost:3000'}
           target="_blank"
           rel="noreferrer"
           className="btn btn-secondary btn-sm"
