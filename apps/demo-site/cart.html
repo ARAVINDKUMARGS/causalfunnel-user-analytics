@@ -32,7 +32,7 @@
       <li><a href="/products.html" class="nav-link" id="nav-products">Products</a></li>
       <li>
         <a href="/cart.html" class="nav-link active cart-badge-wrap" id="nav-cart">
-          Cart 🛒 <span class="cart-count" id="cart-badge">1</span>
+          Cart 🛒 <span class="cart-count" id="cart-badge">0</span>
         </a>
       </li>
     </ul>
@@ -40,42 +40,53 @@
 
   <!-- Container -->
   <main class="container">
-    <h1 class="section-title" style="margin-bottom: 24px;">Your Cart & Checkout</h1>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+      <h1 class="section-title">Your Cart & Checkout</h1>
+      <a href="/products.html" class="btn btn-secondary btn-sm">&larr; Continue Shopping</a>
+    </div>
 
     <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: start;">
-      <!-- Order Items List -->
-      <div class="card">
+      <!-- Dynamic Order Items List -->
+      <div class="card" id="cart-card">
         <h2 style="font-size: 1.25rem; margin-bottom: 16px;">Order Summary</h2>
-        <div style="display: flex; gap: 16px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border-color);">
-          <div style="font-size: 2.5rem; background: rgba(255,255,255,0.05); padding: 12px; border-radius: var(--radius-sm);">🎧</div>
-          <div style="flex: 1;">
-            <h3 style="font-size: 1.05rem;">Aurora Pro ANC Headphones</h3>
-            <p style="color: var(--text-muted); font-size: 0.85rem;">Color: Matte Black | Qty: 1</p>
+        
+        <!-- Populated dynamically by app.js -->
+        <div id="cart-items-container">
+          <div style="padding: 24px; text-align: center; color: var(--text-muted);">
+            Loading your cart items...
           </div>
-          <span class="price">$299.00</span>
         </div>
 
-        <div style="padding-top: 16px; display: flex; justify-content: space-between; color: var(--text-muted);">
-          <span>Estimated Shipping:</span>
-          <span style="color: #10b981;">FREE Express</span>
+        <div style="padding-top: 16px; display: flex; justify-content: space-between; color: var(--text-muted); border-top: 1px solid var(--border-color); margin-top: 16px;">
+          <span>Subtotal:</span>
+          <span id="cart-subtotal" style="font-weight: 600; color: var(--text-main);">$0.00</span>
         </div>
-        <div style="padding-top: 8px; display: flex; justify-content: space-between; font-weight: 700; font-size: 1.2rem; color: #fff;">
+        <div style="padding-top: 8px; display: flex; justify-content: space-between; color: var(--text-muted);">
+          <span>Estimated Shipping:</span>
+          <span style="color: #10b981; font-weight: 600;">FREE Express</span>
+        </div>
+        <div style="padding-top: 12px; display: flex; justify-content: space-between; font-weight: 700; font-size: 1.25rem; color: #fff; border-top: 1px dashed var(--border-color); margin-top: 8px;">
           <span>Total:</span>
-          <span>$299.00</span>
+          <span id="cart-total" class="price">$0.00</span>
         </div>
       </div>
 
       <!-- Checkout Form (Protected / Privacy Form) -->
-      <div class="card">
+      <div class="card" id="checkout-card">
         <h2 style="font-size: 1.25rem; margin-bottom: 8px;">Express Checkout</h2>
         <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px;">
           🔒 Sensitive form data (passwords, cards, inputs) is excluded automatically by the CausalFunnel tracker.
         </p>
 
-        <form id="checkout-form" data-cf-ignore="true" onsubmit="event.preventDefault(); showToast('✅ Order simulated successfully!');">
+        <form id="checkout-form" data-cf-ignore="true" onsubmit="handleCheckout(event)">
           <div style="margin-bottom: 12px;">
             <label style="display:block; font-size:0.85rem; margin-bottom:4px; color:var(--text-muted);">Full Name</label>
-            <input type="text" value="Alex Morgan" style="width:100%; padding:10px; background:rgba(255,255,255,0.05); border:1px solid var(--border-color); color:#fff; border-radius:var(--radius-sm);" id="input-name">
+            <input type="text" value="Alex Morgan" style="width:100%; padding:10px; background:rgba(255,255,255,0.05); border:1px solid var(--border-color); color:#fff; border-radius:var(--radius-sm);" id="input-name" required>
+          </div>
+
+          <div style="margin-bottom: 12px;">
+            <label style="display:block; font-size:0.85rem; margin-bottom:4px; color:var(--text-muted);">Email Address</label>
+            <input type="email" value="alex.morgan@example.com" style="width:100%; padding:10px; background:rgba(255,255,255,0.05); border:1px solid var(--border-color); color:#fff; border-radius:var(--radius-sm);" id="input-email" required>
           </div>
 
           <div style="margin-bottom: 12px;">
@@ -85,11 +96,11 @@
 
           <div style="margin-bottom: 20px;">
             <label style="display:block; font-size:0.85rem; margin-bottom:4px; color:var(--text-muted);">Card Number (Excluded by SDK)</label>
-            <input type="text" data-cf-ignore="true" placeholder="•••• •••• •••• 4242" style="width:100%; padding:10px; background:rgba(255,255,255,0.05); border:1px solid var(--border-color); color:#fff; border-radius:var(--radius-sm);" id="input-card">
+            <input type="text" data-cf-ignore="true" placeholder="•••• •••• •••• 4242" value="4242 •••• •••• 4242" style="width:100%; padding:10px; background:rgba(255,255,255,0.05); border:1px solid var(--border-color); color:#fff; border-radius:var(--radius-sm);" id="input-card">
           </div>
 
           <button type="submit" class="btn btn-success btn-block" id="btn-submit-order">
-            Complete Order ($299.00) 💳
+            Complete Order 💳
           </button>
         </form>
       </div>
@@ -103,6 +114,40 @@
   <div id="toast-container" class="toast-container"></div>
 
   <script src="/app.js"></script>
+  <script>
+    function handleCheckout(e) {
+      e.preventDefault();
+      const items = getCart();
+      if (items.length === 0) {
+        showToast('⚠️ Your cart is empty!');
+        return;
+      }
+      
+      showToast('🎉 Order placed successfully! Thank you for your purchase.');
+      // Track checkout conversion
+      if (window.AnalyticsTracker) {
+        AnalyticsTracker.track('click', {
+          click: {
+            targetTag: 'button',
+            targetId: 'btn-submit-order',
+            targetText: 'Complete Order'
+          },
+          metadata: {
+            action: 'order_completed',
+            item_count: items.length
+          }
+        });
+      }
+
+      // Clear cart
+      localStorage.removeItem('cf_demo_cart_items');
+      setTimeout(() => {
+        renderCartPage();
+        updateCartBadge();
+      }, 500);
+    }
+  </script>
+
   <!-- Standalone Browser Tracking SDK -->
   <script src="http://localhost:5000/tracker.js"></script>
   <script>

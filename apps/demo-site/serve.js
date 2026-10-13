@@ -23,7 +23,12 @@ const server = http.createServer((req, res) => {
     pathname = '/index.html';
   }
 
-  const filePath = path.join(PUBLIC_DIR, pathname);
+  let filePath = path.join(PUBLIC_DIR, pathname);
+
+  // If path has no extension and file does not exist, check for .html extension
+  if (!path.extname(pathname) && !fs.existsSync(filePath) && fs.existsSync(`${filePath}.html`)) {
+    filePath = `${filePath}.html`;
+  }
 
   // Prevent directory traversal
   if (!filePath.startsWith(PUBLIC_DIR)) {
