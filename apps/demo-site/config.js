@@ -42,7 +42,7 @@
 
   const defaultApi = isLocal
     ? 'http://localhost:5000'
-    : (window.__CF_API_URL__ || metaApi || window.location.origin);
+    : (window.__CF_API_URL__ || metaApi || 'https://causalfunnel-user-analytics-6.onrender.com');
 
   const defaultDashboard = isLocal
     ? 'http://localhost:5173'
