@@ -12,10 +12,10 @@ async function connectDB() {
   try {
     mongoose.set('strictQuery', true);
     
-    // Connect with recommended options and reasonable timeouts
+    // Connect with recommended options and reasonable timeouts for cloud environments
     const conn = await mongoose.connect(MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000,
-      connectTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 15000,
+      connectTimeoutMS: 15000,
     });
 
     isConnected = true;

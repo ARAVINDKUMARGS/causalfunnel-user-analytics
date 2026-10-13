@@ -4,9 +4,8 @@ services:
     runtime: node
     plan: free
     region: oregon
-    rootDir: apps/server
-    buildCommand: npm install
-    startCommand: node src/server.js
+    buildCommand: npm install && npm run build
+    startCommand: node apps/server/src/server.js
     envVars:
       - key: NODE_ENV
         value: production

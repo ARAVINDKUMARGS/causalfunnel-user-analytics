@@ -33,9 +33,16 @@
     storedDashboard = localStorage.getItem('cf_dashboard_url');
   } catch (e) {}
 
+  // Meta tag detection for production injected hosts
+  let metaApi = null;
+  const metaTag = document.querySelector('meta[name="causalfunnel-api-url"]');
+  if (metaTag) {
+    metaApi = metaTag.getAttribute('content');
+  }
+
   const defaultApi = isLocal
     ? 'http://localhost:5000'
-    : (window.__CF_API_URL__ || window.location.origin);
+    : (window.__CF_API_URL__ || metaApi || window.location.origin);
 
   const defaultDashboard = isLocal
     ? 'http://localhost:5173'
@@ -47,11 +54,35 @@
     websiteId: 'demo-store'
   };
 
-  // Sync dashboard link in banner once DOM is ready
+  // Sync dashboard link and interactive API switcher in banner once DOM is ready
   document.addEventListener('DOMContentLoaded', function () {
     const link = document.getElementById('link-open-dashboard');
     if (link && window.CF_CONFIG.dashboardUrl) {
       link.href = window.CF_CONFIG.dashboardUrl;
+    }
+
+    const bannerLeft = document.querySelector('.demo-banner .banner-left');
+    if (bannerLeft && !document.getElementById('btn-config-api')) {
+      const configBtn = document.createElement('button');
+      configBtn.id = 'btn-config-api';
+      configBtn.style.cssText =
+        'background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); ' +
+        'color: #fff; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; cursor: pointer; ' +
+        'margin-left: 10px; transition: background 0.2s; vertical-align: middle;';
+      configBtn.innerText = '⚙️ API: ' + (window.CF_CONFIG.apiUrl || 'None');
+      configBtn.title = 'Click to switch or configure target API endpoint';
+      configBtn.onclick = function () {
+        const nextUrl = window.prompt(
+          'Configure CausalFunnel API endpoint (e.g., https://your-app.onrender.com):',
+          window.CF_CONFIG.apiUrl || 'http://localhost:5000'
+        );
+        if (nextUrl && nextUrl.trim()) {
+          const clean = nextUrl.trim().replace(/\/+$/, '');
+          localStorage.setItem('cf_api_url', clean);
+          window.location.reload();
+        }
+      };
+      bannerLeft.appendChild(configBtn);
     }
   });
 })();

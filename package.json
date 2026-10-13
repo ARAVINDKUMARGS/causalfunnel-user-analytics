@@ -8,6 +8,7 @@
     "apps/*"
   ],
   "scripts": {
+    "start": "node apps/server/src/server.js",
     "dev": "npm run dev --workspaces --if-present",
     "dev:server": "npm run dev --workspace=apps/server",
     "dev:dashboard": "npm run dev --workspace=apps/dashboard",

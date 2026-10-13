@@ -28,6 +28,7 @@ Built for the **CausalFunnel Full Stack Engineer Intern Technical Assignment**.
 8. [Database Schema & Compound Index Design](#-database-schema--compound-index-design)
 9. [Automated Testing & Verified Results](#-automated-testing--verified-results)
 10. [Troubleshooting & DevOps FAQ](#-troubleshooting--devops-faq)
+11. [Public URL Verification Checklist](#-public-url-verification-checklist)
 
 ---
 
@@ -398,3 +399,49 @@ npm run build:dashboard
 #### 4. MongoDB Atlas Connection Timeout
 - **Symptom**: `MongooseServerSelectionError: Server selection timed out after 5000 ms`.
 - **Solution**: In Atlas, navigate to **Network Access** and verify `0.0.0.0/0` (Allow Access from Anywhere) is active. Render free containers do not have static IP addresses.
+
+---
+
+## ✅ Public URL Verification Checklist
+
+Once your Render web service and Vercel frontends are deployed, complete this verification checklist to validate end-to-end operational readiness:
+
+### 1. API Verification (Render)
+Run these commands from your terminal, replacing with your live Render URL:
+```bash
+# 1.1 Verify API root info
+curl -i https://<your-render-service>.onrender.com/
+# Expected: HTTP 200 {"name":"CausalFunnel Analytics API","version":"1.0.0","status":"online"}
+
+# 1.2 Verify API Health & MongoDB connectivity
+curl -i https://<your-render-service>.onrender.com/api/health
+# Expected: HTTP 200 {"status":"healthy","database":{"status":"connected","isHealthy":true}}
+
+# 1.3 Verify standalone tracker SDK serving
+curl -i https://<your-render-service>.onrender.com/tracker.js
+# Expected: HTTP 200 (Serving vanilla tracker JavaScript bundle)
+
+# 1.4 Test CORS preflight response
+curl -i -X OPTIONS https://<your-render-service>.onrender.com/api/events \
+  -H "Origin: https://<your-dashboard>.vercel.app" \
+  -H "Access-Control-Request-Method: POST" \
+  -H "Access-Control-Request-Headers: Content-Type"
+# Expected: HTTP 204 or 200 with Access-Control-Allow-Origin header
+```
+
+### 2. Dashboard Verification (Vercel)
+- [ ] **Home / Overview Page**: Open `https://<your-dashboard>.vercel.app/`. Confirm KPI stat cards and activity timeseries charts render without errors.
+- [ ] **Live Health Indicator**: In the top navbar, confirm the badge says `MongoDB Connected` with a glowing green dot.
+- [ ] **SPA Direct Refresh**: Navigate to `https://<your-dashboard>.vercel.app/heatmap` and press browser refresh (**F5**). Ensure the page loads without Vercel 404 errors.
+- [ ] **Session Replay & Timeline**: Navigate to `https://<your-dashboard>.vercel.app/sessions`. Click on any recorded session ID and verify that the step-by-step chronological user journey displays with timestamps and page transition tags.
+
+### 3. Demo Store & Telemetry Streaming Verification
+- [ ] **Demo Store Launch**: Open `https://<your-demo-store>.vercel.app/`.
+- [ ] **Active Tracker Status**: Check the top banner to confirm `Analytics Tracker Active` is displayed. Click `⚙️ API` to verify or switch the target Render API URL.
+- [ ] **User Journey Generation**:
+  1. Click **Explore Collection 🎧** (triggers `click` + navigation `page_view`).
+  2. Click **Add to Cart** on any product card (triggers `click` with button coordinates).
+  3. Navigate to **Cart 🛒** (`page_view`).
+  4. Submit **Complete Order** (`click` with metadata and automatic exclusion of sensitive input fields).
+- [ ] **Real-Time Data Reflection**: Switch back to the Analytics Dashboard tab. Refresh or check the Overview / Heatmap tab to observe the newly recorded events and click coordinates plotted on the page heatmap!
+
